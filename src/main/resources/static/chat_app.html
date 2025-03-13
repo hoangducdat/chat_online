@@ -160,7 +160,7 @@
     fetch(`http://localhost:8080/api/chat/history/1/2`)
     .then(response => response.json())
     .then(messages => {
-      console.log('Loaded messages:', messages); 
+      console.log('Loaded messages:', messages);
 
       messages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
