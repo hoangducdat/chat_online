@@ -10,6 +10,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Long> {
-  @Query("SELECT m FROM Message m WHERE (m.sender.id = :userId AND m.receiver.id = :friendId) OR (m.sender.id = :friendId AND m.receiver.id = :userId) ORDER BY m.timestamp ASC")
+
+  @Query("SELECT m FROM Message m WHERE (m.sender.id = :userId AND m.receiver.id = :friendId) "
+      + "OR (m.sender.id = :friendId AND m.receiver.id = :userId) ORDER BY m.timestamp ASC")
   List<Message> findChatHistory(@Param("userId") Long userId, @Param("friendId") Long friendId);
 }
