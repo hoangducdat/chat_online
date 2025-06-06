@@ -1,6 +1,6 @@
 package org.project.hubt.chat_online.repository;
 
-import org.project.hubt.chat_online.enity.Message;
+import org.project.hubt.chat_online.entity.Message;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

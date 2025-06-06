@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Online - Đăng nhập</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Arial', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .login-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+      padding: 40px;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .logo {
+      margin-bottom: 30px;
+    }
+
+    .logo i {
+      font-size: 60px;
+      color: #667eea;
+      margin-bottom: 10px;
+    }
+
+    .logo h1 {
+      color: #333;
+      font-size: 28px;
+      font-weight: 600;
+    }
+
+    .login-tabs {
+      display: flex;
+      margin-bottom: 30px;
+      border-radius: 10px;
+      background: #f8f9fa;
+      padding: 5px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      color: #6c757d;
+    }
+
+    .tab-btn.active {
+      background: #667eea;
+      color: white;
+      box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+    }
+
+    .form-container {
+      position: relative;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      position: relative;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px 45px 12px 15px;
+      border: 2px solid #e9ecef;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      background: #f8f9fa;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #667eea;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-group i {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6c757d;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 20px;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .error-message {
+      background: #fee;
+      color: #e74c3c;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border-left: 4px solid #e74c3c;
+      display: none;
+    }
+
+    .success-message {
+      background: #efe;
+      color: #27ae60;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border-left: 4px solid #27ae60;
+      display: none;
+    }
+
+    .register-form {
+      display: none;
+    }
+
+    .loading {
+      display: none;
+      margin-left: 10px;
+    }
+
+    .loading i {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .form-footer {
+      margin-top: 20px;
+      color: #6c757d;
+      font-size: 14px;
+    }
+
+    @media (max-width: 480px) {
+      .login-container {
+        padding: 30px 20px;
+      }
+      
+      .logo h1 {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="logo">
+      <i class="fas fa-comments"></i>
+      <h1>Chat Online</h1>
+    </div>
+
+    <div class="login-tabs">
+      <button class="tab-btn active" onclick="switchTab('login')">Đăng nhập</button>
+      <button class="tab-btn" onclick="switchTab('register')">Đăng ký</button>
+    </div>
+
+    <div class="error-message" id="errorMessage"></div>
+    <div class="success-message" id="successMessage"></div>
+
+    <!-- Login Form -->
+    <div class="form-container" id="loginForm">
+      <form onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label for="loginUsername">Tên đăng nhập</label>
+          <input type="text" id="loginUsername" name="username" required>
+          <i class="fas fa-user"></i>
+        </div>
+        
+        <div class="form-group">
+          <label for="loginPassword">Mật khẩu</label>
+          <input type="password" id="loginPassword" name="password" required>
+          <i class="fas fa-lock"></i>
+        </div>
+
+        <button type="submit" class="submit-btn" id="loginBtn">
+          Đăng nhập
+          <span class="loading" id="loginLoading">
+            <i class="fas fa-spinner"></i>
+          </span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Register Form -->
+    <div class="form-container register-form" id="registerForm">
+      <form onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label for="registerUsername">Tên đăng nhập</label>
+          <input type="text" id="registerUsername" name="username" required minlength="3" maxlength="50">
+          <i class="fas fa-user"></i>
+        </div>
+        
+        <div class="form-group">
+          <label for="registerEmail">Email</label>
+          <input type="email" id="registerEmail" name="email" required>
+          <i class="fas fa-envelope"></i>
+        </div>
+        
+        <div class="form-group">
+          <label for="registerPassword">Mật khẩu</label>
+          <input type="password" id="registerPassword" name="password" required minlength="6">
+          <i class="fas fa-lock"></i>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Xác nhận mật khẩu</label>
+          <input type="password" id="confirmPassword" name="confirmPassword" required>
+          <i class="fas fa-lock"></i>
+        </div>
+
+        <button type="submit" class="submit-btn" id="registerBtn">
+          Đăng ký
+          <span class="loading" id="registerLoading">
+            <i class="fas fa-spinner"></i>
+          </span>
+        </button>
+      </form>
+    </div>
+
+    <div class="form-footer">
+      <p>Chào mừng bạn đến với Chat Online!</p>
+    </div>
+  </div>
+
+  <script>
+    // Switch between login and register tabs
+    function switchTab(tab) {
+      const loginForm = document.getElementById('loginForm');
+      const registerForm = document.getElementById('registerForm');
+      const tabBtns = document.querySelectorAll('.tab-btn');
+      
+      // Clear messages
+      clearMessages();
+      
+      if (tab === 'login') {
+        loginForm.style.display = 'block';
+        registerForm.style.display = 'none';
+        tabBtns[0].classList.add('active');
+        tabBtns[1].classList.remove('active');
+      } else {
+        loginForm.style.display = 'none';
+        registerForm.style.display = 'block';
+        tabBtns[0].classList.remove('active');
+        tabBtns[1].classList.add('active');
+      }
+    }
+
+    // Show error message
+    function showError(message) {
+      const errorDiv = document.getElementById('errorMessage');
+      errorDiv.textContent = message;
+      errorDiv.style.display = 'block';
+      document.getElementById('successMessage').style.display = 'none';
+    }
+
+    // Show success message
+    function showSuccess(message) {
+      const successDiv = document.getElementById('successMessage');
+      successDiv.textContent = message;
+      successDiv.style.display = 'block';
+      document.getElementById('errorMessage').style.display = 'none';
+    }
+
+    // Clear messages
+    function clearMessages() {
+      document.getElementById('errorMessage').style.display = 'none';
+      document.getElementById('successMessage').style.display = 'none';
+    }
+
+    // Handle login
+    async function handleLogin(event) {
+      event.preventDefault();
+      
+      const username = document.getElementById('loginUsername').value;
+      const password = document.getElementById('loginPassword').value;
+      const loginBtn = document.getElementById('loginBtn');
+      const loading = document.getElementById('loginLoading');
+      
+      // Show loading
+      loginBtn.disabled = true;
+      loading.style.display = 'inline';
+      clearMessages();
+      
+      try {
+        const response = await fetch('/api/users/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username: username,
+            password: password
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          // Save user info to localStorage
+          localStorage.setItem('currentUser', JSON.stringify(data.data));
+          localStorage.setItem('isLoggedIn', 'true');
+          
+          showSuccess('Đăng nhập thành công! Đang chuyển hướng...');
+          
+          // Redirect to chat after 1 second
+          setTimeout(() => {
+            window.location.href = '/chat.html';
+          }, 1000);
+        } else {
+          showError(data.message || 'Đăng nhập thất bại');
+        }
+      } catch (error) {
+        showError('Lỗi kết nối. Vui lòng thử lại.');
+        console.error('Login error:', error);
+      } finally {
+        // Hide loading
+        loginBtn.disabled = false;
+        loading.style.display = 'none';
+      }
+    }
+
+    // Handle register
+    async function handleRegister(event) {
+      event.preventDefault();
+      
+      const username = document.getElementById('registerUsername').value;
+      const email = document.getElementById('registerEmail').value;
+      const password = document.getElementById('registerPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      const registerBtn = document.getElementById('registerBtn');
+      const loading = document.getElementById('registerLoading');
+      
+      // Validate password confirmation
+      if (password !== confirmPassword) {
+        showError('Mật khẩu xác nhận không khớp');
+        return;
+      }
+      
+      // Show loading
+      registerBtn.disabled = true;
+      loading.style.display = 'inline';
+      clearMessages();
+      
+      try {
+        const response = await fetch('/api/users/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username: username,
+            email: email,
+            password: password
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showSuccess('Đăng ký thành công! Vui lòng đăng nhập.');
+          
+          // Switch to login tab after 2 seconds
+          setTimeout(() => {
+            switchTab('login');
+            document.getElementById('loginUsername').value = username;
+          }, 2000);
+        } else {
+          showError(data.message || 'Đăng ký thất bại');
+        }
+      } catch (error) {
+        showError('Lỗi kết nối. Vui lòng thử lại.');
+        console.error('Register error:', error);
+      } finally {
+        // Hide loading
+        registerBtn.disabled = false;
+        loading.style.display = 'none';
+      }
+    }
+
+    // Check if user is already logged in
+    window.onload = function() {
+      const isLoggedIn = localStorage.getItem('isLoggedIn');
+      if (isLoggedIn === 'true') {
+        window.location.href = '/chat.html';
+      }
+    };
+  </script>
+</body>
+</html>

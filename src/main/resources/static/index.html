@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Online - Kết nối mọi lúc, mọi nơi</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 1rem 2rem;
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #1877f2;
+    }
+
+    .logo i {
+      margin-right: 0.5rem;
+      font-size: 1.8rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: #1877f2;
+    }
+
+    .cta-button {
+      background: #1877f2;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .cta-button:hover {
+      background: #166fe5;
+      transform: translateY(-2px);
+    }
+
+    /* Hero Section */
+    .hero {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+      position: relative;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="%23ffffff" stop-opacity="0.1"/><stop offset="100%" stop-color="%23ffffff" stop-opacity="0"/></radialGradient></defs><circle cx="200" cy="200" r="100" fill="url(%23a)"/><circle cx="800" cy="300" r="150" fill="url(%23a)"/><circle cx="400" cy="700" r="120" fill="url(%23a)"/></svg>');
+      opacity: 0.3;
+    }
+
+    .hero-content {
+      max-width: 800px;
+      z-index: 1;
+      position: relative;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+      animation: fadeInUp 1s ease-out;
+    }
+
+    .hero p {
+      font-size: 1.3rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+      animation: fadeInUp 1s ease-out 0.2s both;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      animation: fadeInUp 1s ease-out 0.4s both;
+    }
+
+    .btn-primary {
+      background: #fff;
+      color: #1877f2;
+      padding: 1rem 2rem;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: white;
+      padding: 1rem 2rem;
+      border: 2px solid white;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+      background: white;
+      color: #1877f2;
+      transform: translateY(-3px);
+    }
+
+    /* Features Section */
+    .features {
+      padding: 5rem 2rem;
+      background: #f8f9fa;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .section-title h2 {
+      font-size: 2.5rem;
+      color: #333;
+      margin-bottom: 1rem;
+    }
+
+    .section-title p {
+      font-size: 1.1rem;
+      color: #666;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .feature-card {
+      background: white;
+      padding: 2rem;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .feature-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      color: white;
+      font-size: 2rem;
+    }
+
+    .feature-card h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: #333;
+    }
+
+    .feature-card p {
+      color: #666;
+      line-height: 1.6;
+    }
+
+    /* Demo Section */
+    .demo {
+      padding: 5rem 2rem;
+      background: white;
+    }
+
+    .demo-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .demo-text h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: #333;
+    }
+
+    .demo-text p {
+      font-size: 1.1rem;
+      color: #666;
+      margin-bottom: 2rem;
+    }
+
+    .demo-features {
+      list-style: none;
+    }
+
+    .demo-features li {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+      color: #333;
+    }
+
+    .demo-features i {
+      color: #42b883;
+      margin-right: 1rem;
+      font-size: 1.2rem;
+    }
+
+    .demo-image {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      border-radius: 20px;
+      padding: 2rem;
+      text-align: center;
+      color: white;
+    }
+
+    .demo-image i {
+      font-size: 5rem;
+      margin-bottom: 1rem;
+      opacity: 0.8;
+    }
+
+    /* CTA Section */
+    .cta-section {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 5rem 2rem;
+      text-align: center;
+      color: white;
+    }
+
+    .cta-section h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .cta-section p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+    }
+
+    /* Footer */
+    .footer {
+      background: #333;
+      color: white;
+      padding: 3rem 2rem 1rem;
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .footer-links a {
+      color: #ccc;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .footer-links a:hover {
+      color: #1877f2;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid #555;
+      padding-top: 1rem;
+      color: #ccc;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+
+      .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .demo-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-links {
+        flex-direction: column;
+        gap: 1rem;
+      }
+    }
+
+    /* Scroll Effects */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.6s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <nav class="nav">
+      <div class="logo">
+        <i class="fas fa-comments"></i>
+        Chat Online
+      </div>
+      <ul class="nav-links">
+        <li><a href="#features">Tính năng</a></li>
+        <li><a href="#demo">Demo</a></li>
+        <li><a href="#contact">Liên hệ</a></li>
+      </ul>
+      <a href="/login.html" class="cta-button" id="headerCTA">Bắt đầu ngay</a>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Kết nối mọi lúc, mọi nơi</h1>
+      <p>Ứng dụng chat hiện đại, đơn giản và bảo mật. Trò chuyện với bạn bè, gia đình một cách dễ dàng và tiện lợi.</p>
+      <div class="hero-buttons">
+        <a href="/login.html" class="btn-primary" id="heroCTA">
+          <i class="fas fa-rocket"></i>
+          Bắt đầu chat
+        </a>
+        <a href="#demo" class="btn-secondary">Xem demo</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="features">
+    <div class="container">
+      <div class="section-title fade-in">
+        <h2>Tính năng nổi bật</h2>
+        <p>Trải nghiệm chat hoàn hảo với những tính năng hiện đại và thân thiện</p>
+      </div>
+      
+      <div class="features-grid">
+        <div class="feature-card fade-in">
+          <div class="feature-icon">
+            <i class="fas fa-bolt"></i>
+          </div>
+          <h3>Tin nhắn tức thì</h3>
+          <p>Gửi và nhận tin nhắn trong thời gian thực với công nghệ WebSocket hiện đại, đảm bảo tốc độ và độ ổn định cao.</p>
+        </div>
+
+        <div class="feature-card fade-in">
+          <div class="feature-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <h3>Quản lý bạn bè</h3>
+          <p>Tìm kiếm, thêm bạn và quản lý danh sách bạn bè một cách dễ dàng. Hệ thống lời mời kết bạn thông minh và tiện lợi.</p>
+        </div>
+
+        <div class="feature-card fade-in">
+          <div class="feature-icon">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <h3>Bảo mật cao</h3>
+          <p>Mật khẩu được mã hóa BCrypt, xác thực an toàn và bảo vệ thông tin cá nhân của bạn một cách tối ưu nhất.</p>
+        </div>
+
+        <div class="feature-card fade-in">
+          <div class="feature-icon">
+            <i class="fas fa-mobile-alt"></i>
+          </div>
+          <h3>Responsive Design</h3>
+          <p>Giao diện tương thích hoàn hảo trên mọi thiết bị từ desktop đến mobile, mang lại trải nghiệm mượt mà.</p>
+        </div>
+
+        <div class="feature-card fade-in">
+          <div class="feature-icon">
+            <i class="fas fa-history"></i>
+          </div>
+          <h3>Lịch sử chat</h3>
+          <p>Lưu trữ và hiển thị lịch sử trò chuyện, giúp bạn không bao giờ bị mất những cuộc hội thoại quan trọng.</p>
+        </div>
+
+        <div class="feature-card fade-in">
+          <div class="feature-icon">
+            <i class="fas fa-palette"></i>
+          </div>
+          <h3>UI/UX hiện đại</h3>
+          <p>Thiết kế giao diện đẹp mắt, trực quan như Messenger và Zalo, mang lại cảm giác quen thuộc và dễ sử dụng.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Demo Section -->
+  <section id="demo" class="demo">
+    <div class="container">
+      <div class="demo-content">
+        <div class="demo-text fade-in">
+          <h2>Trải nghiệm ngay hôm nay</h2>
+          <p>Chat Online mang đến cho bạn trải nghiệm nhắn tin hoàn hảo với giao diện hiện đại và tính năng đa dạng.</p>
+          
+          <ul class="demo-features">
+            <li><i class="fas fa-check"></i> Đăng ký tài khoản dễ dàng</li>
+            <li><i class="fas fa-check"></i> Tìm kiếm bạn bè nhanh chóng</li>
+            <li><i class="fas fa-check"></i> Chat real-time mượt mà</li>
+            <li><i class="fas fa-check"></i> Giao diện thân thiện</li>
+            <li><i class="fas fa-check"></i> Hoàn toàn miễn phí</li>
+          </ul>
+
+          <a href="/login.html" class="btn-primary" id="demoCTA">
+            <i class="fas fa-play"></i>
+            Thử ngay
+          </a>
+        </div>
+
+        <div class="demo-image fade-in">
+          <i class="fas fa-comments"></i>
+          <h3>Giao diện Chat</h3>
+          <p>Thiết kế hiện đại, trực quan và dễ sử dụng</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section id="contact" class="cta-section">
+    <div class="container">
+      <h2>Sẵn sàng bắt đầu?</h2>
+      <p>Tham gia cộng đồng Chat Online và kết nối với bạn bè ngay hôm nay!</p>
+      <a href="/login.html" class="btn-primary" id="ctaCTA">
+        <i class="fas fa-rocket"></i>
+        Đăng ký miễn phí
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-links">
+        <a href="#features">Tính năng</a>
+        <a href="#demo">Demo</a>
+        <a href="/login.html">Đăng nhập</a>
+        <a href="#contact">Liên hệ</a>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 Chat Online. Được phát triển với ❤️ bằng Spring Boot.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Check if user is already logged in
+    function checkLoginStatus() {
+      const isLoggedIn = localStorage.getItem('isLoggedIn');
+      if (isLoggedIn) {
+        // Update CTA buttons for logged in users
+        const ctaButtons = document.querySelectorAll('#headerCTA, #heroCTA, #demoCTA, #ctaCTA');
+        ctaButtons.forEach(btn => {
+          btn.href = '/chat.html';
+          btn.innerHTML = btn.innerHTML.replace('Bắt đầu', 'Vào chat').replace('Thử ngay', 'Vào chat').replace('Đăng ký', 'Vào chat');
+        });
+      }
+    }
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // Fade in animation on scroll
+    const fadeElements = document.querySelectorAll('.fade-in');
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, {
+      threshold: 0.1
+    });
+
+    fadeElements.forEach(element => {
+      observer.observe(element);
+    });
+
+    // Header background on scroll
+    window.addEventListener('scroll', () => {
+      const header = document.querySelector('.header');
+      if (window.scrollY > 100) {
+        header.style.background = 'rgba(255, 255, 255, 0.98)';
+        header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+      } else {
+        header.style.background = 'rgba(255, 255, 255, 0.95)';
+        header.style.boxShadow = 'none';
+      }
+    });
+
+    // Initialize on page load
+    window.onload = function() {
+      checkLoginStatus();
+    };
+  </script>
+</body>
+</html>

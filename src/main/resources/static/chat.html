@@ -1,0 +1,1584 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Online</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f2f5;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Header */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: #fff;
+      border-bottom: 1px solid #e4e6ea;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+      z-index: 1000;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      color: #1877f2;
+    }
+
+    .header-left i {
+      font-size: 24px;
+      margin-right: 10px;
+    }
+
+    .header-left h2 {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      background: #f0f2f5;
+      padding: 8px 12px;
+      border-radius: 20px;
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #1877f2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 8px;
+      color: white;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .user-name {
+      font-weight: 500;
+      color: #050505;
+    }
+
+    .logout-btn {
+      background: #f0f2f5;
+      color: #65676b;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .logout-btn:hover {
+      background: #e4e6ea;
+    }
+
+    /* Main Layout */
+    .main-container {
+      display: flex;
+      height: 100vh;
+      padding-top: 60px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 360px;
+      background: #fff;
+      border-right: 1px solid #e4e6ea;
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 60px);
+    }
+
+    .sidebar-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #e4e6ea;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sidebar-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #050505;
+    }
+
+    .add-friend-btn {
+      background: #1877f2;
+      color: white;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .add-friend-btn:hover {
+      background: #166fe5;
+    }
+
+    .add-friend-btn {
+      position: relative;
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #ff4757;
+      color: white;
+      border-radius: 10px;
+      padding: 2px 6px;
+      font-size: 10px;
+      font-weight: bold;
+      min-width: 16px;
+      text-align: center;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 70vh;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { transform: translate(-50%, -60%); opacity: 0; }
+      to { transform: translate(-50%, -50%); opacity: 1; }
+    }
+
+    .modal-header {
+      padding: 20px;
+      border-bottom: 1px solid #e4e6ea;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #050505;
+    }
+
+    .close-btn {
+      background: #f0f2f5;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #65676b;
+      transition: all 0.2s ease;
+    }
+
+    .close-btn:hover {
+      background: #e4e6ea;
+    }
+
+    .modal-body {
+      padding: 20px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .search-modal {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .search-modal input {
+      flex: 1;
+      padding: 10px 15px;
+      border: 1px solid #ccd0d5;
+      border-radius: 20px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    .search-modal input:focus {
+      border-color: #1877f2;
+    }
+
+    .search-modal button {
+      background: #1877f2;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .search-modal button:hover {
+      background: #166fe5;
+    }
+
+    .user-item {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid #e4e6ea;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .user-item:hover {
+      background: #f0f2f5;
+    }
+
+    .user-item-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+      color: white;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .user-item-info {
+      flex: 1;
+    }
+
+    .user-item-name {
+      font-size: 15px;
+      font-weight: 500;
+      color: #050505;
+      margin-bottom: 2px;
+    }
+
+    .user-item-email {
+      font-size: 13px;
+      color: #65676b;
+    }
+
+    .user-item-action {
+      padding: 6px 16px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .btn-add-friend {
+      background: #1877f2;
+      color: white;
+    }
+
+    .btn-add-friend:hover {
+      background: #166fe5;
+    }
+
+    .btn-accept {
+      background: #42b883;
+      color: white;
+      margin-right: 8px;
+    }
+
+    .btn-accept:hover {
+      background: #369870;
+    }
+
+    .btn-reject {
+      background: #e4e6ea;
+      color: #65676b;
+    }
+
+    .btn-reject:hover {
+      background: #d8dadf;
+    }
+
+    .request-item {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid #e4e6ea;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      background: #f8f9fa;
+    }
+
+    .request-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .no-results {
+      text-align: center;
+      color: #65676b;
+      padding: 20px;
+      font-style: italic;
+    }
+
+    /* Search Box */
+    .search-container {
+      padding: 12px 20px;
+      border-bottom: 1px solid #e4e6ea;
+    }
+
+    .search-box {
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 8px 40px 8px 12px;
+      border: 1px solid #ccd0d5;
+      border-radius: 20px;
+      background: #f0f2f5;
+      font-size: 15px;
+      outline: none;
+    }
+
+    .search-input:focus {
+      background: #fff;
+      border-color: #1877f2;
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #65676b;
+    }
+
+    /* Friends List */
+    .friends-list {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .friend-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      border-bottom: 1px solid #f0f2f5;
+    }
+
+    .friend-item:hover {
+      background: #f0f2f5;
+    }
+
+    .friend-item.active {
+      background: #e7f3ff;
+      border-right: 3px solid #1877f2;
+    }
+
+    .friend-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+      color: white;
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    .friend-info {
+      flex: 1;
+    }
+
+    .friend-name {
+      font-size: 15px;
+      font-weight: 500;
+      color: #050505;
+      margin-bottom: 4px;
+    }
+
+    .friend-status {
+      font-size: 13px;
+      color: #65676b;
+    }
+
+    .friend-status.online {
+      color: #42b883;
+    }
+
+    /* Chat Area */
+    .chat-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      position: relative;
+      height: calc(100vh - 60px);
+      overflow: hidden;
+    }
+
+    /* Welcome Screen */
+    .welcome-screen {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #65676b;
+    }
+
+    .welcome-screen i {
+      font-size: 100px;
+      margin-bottom: 20px;
+      color: #e4e6ea;
+    }
+
+    .welcome-screen h3 {
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .welcome-screen p {
+      font-size: 14px;
+    }
+
+    /* Chat Header */
+    .chat-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #e4e6ea;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #fff;
+      height: 72px;
+      box-sizing: border-box;
+      flex-shrink: 0;
+    }
+
+    .chat-header-left {
+      display: flex;
+      align-items: center;
+    }
+
+    .chat-header-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+      color: white;
+      font-weight: bold;
+    }
+
+    .chat-header-info h4 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #050505;
+      margin-bottom: 2px;
+    }
+
+    .chat-header-info span {
+      font-size: 13px;
+      color: #42b883;
+    }
+
+    .chat-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .chat-action-btn {
+      background: #f0f2f5;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1877f2;
+      transition: all 0.2s ease;
+    }
+
+    .chat-action-btn:hover {
+      background: #e4e6ea;
+    }
+
+    /* Messages Area */
+    .messages-container {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 16px 20px;
+      padding-bottom: 88px;
+      background: #f8f9fa;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      height: calc(100vh - 60px - 72px);
+    }
+
+    .message {
+      display: flex;
+      margin-bottom: 12px;
+      align-items: flex-start;
+      width: 100%;
+    }
+
+    .message.sent {
+      flex-direction: row-reverse;
+      justify-content: flex-start;
+    }
+
+    .message.received {
+      flex-direction: row;
+      justify-content: flex-start;
+    }
+
+    .message-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 12px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .message.sent .message-avatar {
+      margin-left: 8px;
+    }
+
+    .message.received .message-avatar {
+      margin-right: 8px;
+    }
+
+    .message-wrapper {
+      display: flex;
+      flex-direction: column;
+      max-width: 70%;
+      min-width: 0;
+    }
+
+    .message.sent .message-wrapper {
+      align-items: flex-end;
+    }
+
+    .message.received .message-wrapper {
+      align-items: flex-start;
+    }
+
+    .message-content {
+      padding: 10px 16px;
+      border-radius: 18px;
+      font-size: 15px;
+      line-height: 1.4;
+      position: relative;
+      word-wrap: break-word;
+      word-break: break-word;
+      white-space: pre-wrap;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    .message.sent .message-content {
+      background: #1877f2;
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+
+    .message.received .message-content {
+      background: #e4e6ea;
+      color: #050505;
+      border-bottom-left-radius: 4px;
+    }
+
+    .message-time {
+      font-size: 11px;
+      color: #65676b;
+      margin-top: 4px;
+      padding: 0 8px;
+    }
+
+    .message.sent .message-time {
+      text-align: right;
+    }
+
+    .message.received .message-time {
+      text-align: left;
+    }
+
+    /* Input Area */
+    .input-area {
+      position: fixed;
+      bottom: 0;
+      left: 360px;
+      right: 0;
+      padding: 16px 20px;
+      border-top: 1px solid #e4e6ea;
+      background: #fff;
+      z-index: 100;
+      height: 72px;
+      box-sizing: border-box;
+      width: calc(100% - 360px);
+    }
+
+    .input-container {
+      display: flex;
+      align-items: center;
+      background: #f0f2f5;
+      border-radius: 20px;
+      padding: 8px 16px;
+    }
+
+    .message-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 15px;
+      padding: 8px 0;
+      color: #050505;
+      resize: none;
+      max-height: 120px;
+      min-height: 20px;
+      line-height: 1.4;
+      overflow-y: auto;
+      word-wrap: break-word;
+    }
+
+    .message-input::placeholder {
+      color: #65676b;
+    }
+
+    .input-actions {
+      display: flex;
+      gap: 8px;
+      margin-left: 8px;
+    }
+
+    .input-btn {
+      background: none;
+      border: none;
+      color: #1877f2;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 4px;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .input-btn:hover {
+      background: #e4e6ea;
+    }
+
+    .send-btn {
+      background: #1877f2;
+      color: white;
+    }
+
+    .send-btn:hover {
+      background: #166fe5;
+    }
+
+    /* Hidden class */
+    .hidden {
+      display: none !important;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 100%;
+        position: absolute;
+        z-index: 100;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .chat-area {
+        width: 100%;
+      }
+
+      .input-area {
+        left: 0;
+        right: 0;
+        width: 100%;
+      }
+
+      .messages-container {
+        height: calc(100vh - 60px - 72px);
+        padding-bottom: 88px;
+      }
+
+      .message-wrapper {
+        max-width: 80%;
+      }
+
+      .message-content {
+        font-size: 14px;
+        padding: 8px 12px;
+      }
+
+      .input-container {
+        padding: 6px 12px;
+      }
+
+      .message-input {
+        font-size: 14px;
+      }
+    }
+
+    /* Animation for new messages */
+    @keyframes messageSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message {
+      animation: messageSlideIn 0.3s ease-out;
+    }
+
+    /* Scrollbar Styling */
+    .friends-list::-webkit-scrollbar,
+    .messages-container::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .friends-list::-webkit-scrollbar-track,
+    .messages-container::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .friends-list::-webkit-scrollbar-thumb,
+    .messages-container::-webkit-scrollbar-thumb {
+      background: #ccd0d5;
+      border-radius: 3px;
+    }
+
+    .friends-list::-webkit-scrollbar-thumb:hover,
+    .messages-container::-webkit-scrollbar-thumb:hover {
+      background: #8a8d91;
+    }
+
+    /* Smooth scrolling */
+    .messages-container {
+      scroll-behavior: smooth;
+      scrollbar-width: thin;
+      scrollbar-color: #ccd0d5 transparent;
+    }
+
+    /* Ensure messages start from bottom when few messages */
+    .messages-container:before {
+      content: '';
+      flex: 1;
+      min-height: 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <i class="fas fa-comments"></i>
+      <h2>Chat Online</h2>
+    </div>
+    <div class="header-right">
+      <div class="user-info">
+        <div class="user-avatar" id="userAvatar">U</div>
+        <span class="user-name" id="userName">Người dùng</span>
+      </div>
+      <button class="logout-btn" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i>
+        Đăng xuất
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="main-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <!-- Sidebar Header -->
+      <div class="sidebar-header">
+        <h2 class="sidebar-title">Đoạn chat</h2>
+        <div style="display: flex; gap: 8px;">
+          <button class="add-friend-btn" onclick="showFriendRequestsModal()" title="Lời mời kết bạn">
+            <i class="fas fa-user-friends"></i>
+            <span class="notification-badge" id="requestsBadge" style="display: none;">0</span>
+          </button>
+          <button class="add-friend-btn" onclick="showAddFriendModal()" title="Thêm bạn">
+            <i class="fas fa-plus"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Search Box -->
+      <div class="search-container">
+        <div class="search-box">
+          <input type="text" class="search-input" placeholder="Tìm kiếm trong Messenger" id="searchInput">
+          <i class="fas fa-search search-icon"></i>
+        </div>
+      </div>
+
+      <!-- Friends List -->
+      <div class="friends-list" id="friendsList">
+        <!-- Friends will be loaded here -->
+      </div>
+    </div>
+
+    <!-- Chat Area -->
+    <div class="chat-area">
+      <!-- Welcome Screen -->
+      <div class="welcome-screen" id="welcomeScreen">
+        <i class="fas fa-comments"></i>
+        <h3>Chào mừng đến với Chat Online</h3>
+        <p>Chọn một cuộc trò chuyện để bắt đầu nhắn tin</p>
+      </div>
+
+      <!-- Chat Container (Initially Hidden) -->
+      <div class="chat-container hidden" id="chatContainer">
+        <!-- Chat Header -->
+        <div class="chat-header">
+          <div class="chat-header-left">
+            <div class="chat-header-avatar" id="chatHeaderAvatar">F</div>
+            <div class="chat-header-info">
+              <h4 id="chatHeaderName">Tên bạn</h4>
+              <span id="chatHeaderStatus">Đang hoạt động</span>
+            </div>
+          </div>
+          <div class="chat-actions">
+            <button class="chat-action-btn">
+              <i class="fas fa-phone"></i>
+            </button>
+            <button class="chat-action-btn">
+              <i class="fas fa-video"></i>
+            </button>
+            <button class="chat-action-btn">
+              <i class="fas fa-info-circle"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Messages Container -->
+        <div class="messages-container" id="messagesContainer">
+          <!-- Messages will be loaded here -->
+        </div>
+      </div>
+
+      <!-- Input Area (Fixed at bottom) -->
+      <div class="input-area" id="inputArea" style="display: none;">
+        <div class="input-container">
+          <textarea class="message-input" placeholder="Aa" id="messageInput" rows="1"></textarea>
+          <div class="input-actions">
+            <button class="input-btn">
+              <i class="fas fa-image"></i>
+            </button>
+            <button class="input-btn">
+              <i class="fas fa-smile"></i>
+            </button>
+            <button class="input-btn send-btn" onclick="sendMessage()">
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Friend Modal -->
+  <div class="modal" id="addFriendModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Thêm bạn</h3>
+        <button class="close-btn" onclick="closeModal('addFriendModal')">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="search-modal">
+          <input type="text" placeholder="Nhập tên hoặc email..." id="userSearchInput">
+          <button onclick="searchUsers()">Tìm kiếm</button>
+        </div>
+        <div id="searchResults">
+          <div class="no-results">Nhập từ khóa để tìm kiếm bạn bè</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Friend Requests Modal -->
+  <div class="modal" id="friendRequestsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Lời mời kết bạn</h3>
+        <button class="close-btn" onclick="closeModal('friendRequestsModal')">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="friendRequestsList">
+          <!-- Friend requests will be loaded here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.2/sockjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+  
+  <script>
+    // Global variables
+    let currentUser = null;
+    let selectedFriend = null;
+    let stompClient = null;
+    let friends = [];
+
+    // Check authentication on page load
+    window.onload = function() {
+      checkAuthentication();
+      loadUserInfo();
+      loadFriends();
+      updateFriendRequestsBadge();
+      connectWebSocket();
+    };
+
+    function checkAuthentication() {
+      const isLoggedIn = localStorage.getItem('isLoggedIn');
+      const userData = localStorage.getItem('currentUser');
+      
+      if (!isLoggedIn || !userData) {
+        window.location.href = '/login.html';
+        return;
+      }
+      
+      currentUser = JSON.parse(userData);
+    }
+
+    function loadUserInfo() {
+      if (currentUser) {
+        document.getElementById('userName').textContent = currentUser.username;
+        const firstLetter = currentUser.username.charAt(0).toUpperCase();
+        document.getElementById('userAvatar').textContent = firstLetter;
+      }
+    }
+
+    // Load friends list
+    async function loadFriends() {
+      try {
+        const response = await fetch(`/api/friends/${currentUser.id}`);
+        const data = await response.json();
+        
+        if (data.success) {
+          // Convert Friend entities to user objects
+          friends = data.data.map(friendEntity => ({
+            id: friendEntity.friend.id,
+            username: friendEntity.friend.username,
+            email: friendEntity.friend.email,
+            online: Math.random() > 0.5, // Random online status for demo
+            lastMessage: "Tin nhắn cuối..."
+          }));
+        } else {
+          // If no friends, load potential friends for demo
+          await loadPotentialFriends();
+        }
+
+        renderFriendsList();
+      } catch (error) {
+        console.error('Error loading friends:', error);
+        // Load potential friends as fallback
+        await loadPotentialFriends();
+      }
+    }
+
+    async function loadPotentialFriends() {
+      try {
+        const response = await fetch(`/api/friends/potential/${currentUser.id}`);
+        const data = await response.json();
+        
+        if (data.success) {
+          friends = data.data.map(user => ({
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            online: Math.random() > 0.5, // Random online status for demo
+            lastMessage: "Bắt đầu cuộc trò chuyện..."
+          }));
+        }
+
+        renderFriendsList();
+      } catch (error) {
+        console.error('Error loading potential friends:', error);
+      }
+    }
+
+    function renderFriendsList() {
+      const friendsList = document.getElementById('friendsList');
+      friendsList.innerHTML = '';
+
+      friends.forEach(friend => {
+        const friendItem = document.createElement('div');
+        friendItem.className = 'friend-item';
+        friendItem.onclick = () => selectFriend(friend);
+        
+        const firstLetter = friend.username.charAt(0).toUpperCase();
+        const statusClass = friend.online ? 'online' : '';
+        const statusText = friend.online ? 'Đang hoạt động' : 'Không hoạt động';
+        
+        friendItem.innerHTML = `
+          <div class="friend-avatar">${firstLetter}</div>
+          <div class="friend-info">
+            <div class="friend-name">${friend.username}</div>
+            <div class="friend-status ${statusClass}">${statusText}</div>
+          </div>
+        `;
+        
+        friendsList.appendChild(friendItem);
+      });
+    }
+
+    function selectFriend(friend) {
+      selectedFriend = friend;
+      
+      // Update UI
+      document.querySelectorAll('.friend-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      event.currentTarget.classList.add('active');
+      
+      // Show chat container and input area
+      document.getElementById('welcomeScreen').classList.add('hidden');
+      document.getElementById('chatContainer').classList.remove('hidden');
+      document.getElementById('inputArea').style.display = 'block';
+      
+      // Update chat header
+      const firstLetter = friend.username.charAt(0).toUpperCase();
+      document.getElementById('chatHeaderAvatar').textContent = firstLetter;
+      document.getElementById('chatHeaderName').textContent = friend.username;
+      document.getElementById('chatHeaderStatus').textContent = friend.online ? 'Đang hoạt động' : 'Không hoạt động';
+      
+      // Load chat history
+      loadChatHistory();
+      
+      // Focus on input
+      setTimeout(() => {
+        document.getElementById('messageInput').focus();
+      }, 100);
+    }
+
+    async function loadChatHistory() {
+      if (!selectedFriend) return;
+      
+      try {
+        const response = await fetch(`/api/chat/history/${currentUser.id}/${selectedFriend.id}`);
+        const data = await response.json();
+        
+        if (data.success) {
+          renderMessages(data.data);
+        }
+      } catch (error) {
+        console.error('Error loading chat history:', error);
+        // Show some mock messages for demo
+        renderMessages([
+          {
+            id: 1,
+            sender: { id: selectedFriend.id, username: selectedFriend.username },
+            receiver: { id: currentUser.id, username: currentUser.username },
+            content: "Xin chào!",
+            timestamp: new Date(Date.now() - 60000)
+          },
+          {
+            id: 2,
+            sender: { id: currentUser.id, username: currentUser.username },
+            receiver: { id: selectedFriend.id, username: selectedFriend.username },
+            content: "Chào bạn! Bạn có khỏe không?",
+            timestamp: new Date(Date.now() - 30000)
+          }
+        ]);
+      }
+    }
+
+    function renderMessages(messages) {
+      const container = document.getElementById('messagesContainer');
+      container.innerHTML = '';
+      
+      messages.forEach(message => {
+        const messageElement = createMessageElement(message);
+        container.appendChild(messageElement);
+      });
+      
+      // Scroll to bottom with a small delay to ensure DOM is rendered
+      setTimeout(() => {
+        container.scrollTop = container.scrollHeight;
+      }, 50);
+    }
+
+    function createMessageElement(message) {
+      const messageDiv = document.createElement('div');
+      const isSent = message.sender.id === currentUser.id;
+      
+      messageDiv.className = `message ${isSent ? 'sent' : 'received'}`;
+      
+      const avatarLetter = message.sender.username.charAt(0).toUpperCase();
+      const time = new Date(message.timestamp).toLocaleTimeString('vi-VN', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+      
+      // Escape HTML to prevent XSS
+      const content = message.content
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+      
+      messageDiv.innerHTML = `
+        <div class="message-avatar">${avatarLetter}</div>
+        <div class="message-wrapper">
+          <div class="message-content">${content}</div>
+          <div class="message-time">${time}</div>
+        </div>
+      `;
+      
+      return messageDiv;
+    }
+
+    // WebSocket connection
+    function connectWebSocket() {
+      const socket = new SockJS('/chat');
+      stompClient = Stomp.over(socket);
+      
+      stompClient.connect({}, function(frame) {
+        console.log('Connected: ' + frame);
+        
+        // Subscribe to messages
+        stompClient.subscribe('/topic/messages', function(message) {
+          const messageData = JSON.parse(message.body);
+          handleNewMessage(messageData);
+        });
+      });
+    }
+
+    function handleNewMessage(message) {
+      // Only show message if it's for current conversation
+      if (selectedFriend && 
+          ((message.sender.id === currentUser.id && message.receiver.id === selectedFriend.id) ||
+           (message.sender.id === selectedFriend.id && message.receiver.id === currentUser.id))) {
+        
+        const container = document.getElementById('messagesContainer');
+        const isScrolledToBottom = container.scrollHeight - container.clientHeight <= container.scrollTop + 1;
+        
+        const messageElement = createMessageElement(message);
+        container.appendChild(messageElement);
+        
+        // Auto scroll to bottom if user was already at bottom
+        if (isScrolledToBottom) {
+          setTimeout(() => {
+            container.scrollTop = container.scrollHeight;
+          }, 10);
+        }
+      }
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('messageInput');
+      const content = input.value.trim();
+      
+      if (!content || !selectedFriend) return;
+      
+      const message = {
+        sender: { id: currentUser.id },
+        receiver: { id: selectedFriend.id },
+        content: content
+      };
+      
+      // Send via WebSocket
+      if (stompClient) {
+        stompClient.send('/app/sendMessage', {}, JSON.stringify(message));
+      }
+      
+      // Clear input
+      input.value = '';
+      
+      // Auto resize input if needed
+      input.style.height = 'auto';
+    }
+
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('input', function() {
+      const searchTerm = this.value.toLowerCase();
+      const filteredFriends = friends.filter(friend => 
+        friend.username.toLowerCase().includes(searchTerm)
+      );
+      
+      // Re-render with filtered friends
+      const friendsList = document.getElementById('friendsList');
+      friendsList.innerHTML = '';
+      
+      filteredFriends.forEach(friend => {
+        const friendItem = document.createElement('div');
+        friendItem.className = 'friend-item';
+        friendItem.onclick = () => selectFriend(friend);
+        
+        const firstLetter = friend.username.charAt(0).toUpperCase();
+        const statusClass = friend.online ? 'online' : '';
+        const statusText = friend.online ? 'Đang hoạt động' : 'Không hoạt động';
+        
+        friendItem.innerHTML = `
+          <div class="friend-avatar">${firstLetter}</div>
+          <div class="friend-info">
+            <div class="friend-name">${friend.username}</div>
+            <div class="friend-status ${statusClass}">${statusText}</div>
+          </div>
+        `;
+        
+        friendsList.appendChild(friendItem);
+      });
+    });
+
+    // Auto resize textarea and handle Enter key
+    document.getElementById('messageInput').addEventListener('input', function(e) {
+      // Auto resize
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
+
+    document.getElementById('messageInput').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+      // Allow Shift+Enter for new line
+    });
+
+    // Modal functions
+    function showAddFriendModal() {
+      document.getElementById('addFriendModal').style.display = 'block';
+      document.getElementById('userSearchInput').focus();
+    }
+
+    function showFriendRequestsModal() {
+      document.getElementById('friendRequestsModal').style.display = 'block';
+      loadFriendRequests();
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+      // Clear search results
+      if (modalId === 'addFriendModal') {
+        document.getElementById('userSearchInput').value = '';
+        document.getElementById('searchResults').innerHTML = '<div class="no-results">Nhập từ khóa để tìm kiếm bạn bè</div>';
+      }
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const modals = document.querySelectorAll('.modal');
+      modals.forEach(modal => {
+        if (event.target === modal) {
+          modal.style.display = 'none';
+        }
+      });
+    }
+
+    // Search users
+    async function searchUsers() {
+      const searchTerm = document.getElementById('userSearchInput').value.trim();
+      if (!searchTerm) {
+        alert('Vui lòng nhập từ khóa tìm kiếm');
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/friends/search?q=${encodeURIComponent(searchTerm)}&userId=${currentUser.id}`);
+        const data = await response.json();
+
+        const resultsContainer = document.getElementById('searchResults');
+        
+        if (data.success && data.data.length > 0) {
+          resultsContainer.innerHTML = '';
+          data.data.forEach(user => {
+            const userItem = createUserItem(user);
+            resultsContainer.appendChild(userItem);
+          });
+        } else {
+          resultsContainer.innerHTML = '<div class="no-results">Không tìm thấy người dùng nào</div>';
+        }
+      } catch (error) {
+        console.error('Error searching users:', error);
+        alert('Lỗi khi tìm kiếm. Vui lòng thử lại.');
+      }
+    }
+
+    function createUserItem(user) {
+      const userItem = document.createElement('div');
+      userItem.className = 'user-item';
+      
+      const firstLetter = user.username.charAt(0).toUpperCase();
+      
+      userItem.innerHTML = `
+        <div class="user-item-avatar">${firstLetter}</div>
+        <div class="user-item-info">
+          <div class="user-item-name">${user.username}</div>
+          <div class="user-item-email">${user.email}</div>
+        </div>
+        <button class="user-item-action btn-add-friend" onclick="sendFriendRequest(${user.id})">
+          Kết bạn
+        </button>
+      `;
+      
+      return userItem;
+    }
+
+    // Send friend request
+    async function sendFriendRequest(receiverId) {
+      try {
+        const response = await fetch(`/api/friends/request/${currentUser.id}/${receiverId}`, {
+          method: 'POST'
+        });
+        const data = await response.json();
+
+        if (data.success) {
+          alert('Gửi lời mời kết bạn thành công!');
+          // Update button to show request sent
+          event.target.textContent = 'Đã gửi';
+          event.target.disabled = true;
+          event.target.style.background = '#ccc';
+        } else {
+          alert(data.message || 'Gửi lời mời thất bại');
+        }
+      } catch (error) {
+        console.error('Error sending friend request:', error);
+        alert('Lỗi khi gửi lời mời. Vui lòng thử lại.');
+      }
+    }
+
+    // Load friend requests
+    async function loadFriendRequests() {
+      try {
+        const response = await fetch(`/api/friends/requests/received/${currentUser.id}`);
+        const data = await response.json();
+
+        const requestsList = document.getElementById('friendRequestsList');
+        
+        if (data.success && data.data.length > 0) {
+          requestsList.innerHTML = '';
+          data.data.forEach(request => {
+            const requestItem = createRequestItem(request);
+            requestsList.appendChild(requestItem);
+          });
+        } else {
+          requestsList.innerHTML = '<div class="no-results">Không có lời mời kết bạn nào</div>';
+        }
+      } catch (error) {
+        console.error('Error loading friend requests:', error);
+        document.getElementById('friendRequestsList').innerHTML = '<div class="no-results">Lỗi khi tải danh sách</div>';
+      }
+    }
+
+    function createRequestItem(request) {
+      const requestItem = document.createElement('div');
+      requestItem.className = 'request-item';
+      
+      const firstLetter = request.sender.username.charAt(0).toUpperCase();
+      const timeAgo = getTimeAgo(new Date(request.createdAt));
+      
+      requestItem.innerHTML = `
+        <div class="user-item-avatar">${firstLetter}</div>
+        <div class="user-item-info">
+          <div class="user-item-name">${request.sender.username}</div>
+          <div class="user-item-email">${timeAgo}</div>
+        </div>
+        <div class="request-actions">
+          <button class="user-item-action btn-accept" onclick="acceptFriendRequest(${request.id})">
+            Chấp nhận
+          </button>
+          <button class="user-item-action btn-reject" onclick="rejectFriendRequest(${request.id})">
+            Từ chối
+          </button>
+        </div>
+      `;
+      
+      return requestItem;
+    }
+
+    // Accept friend request
+    async function acceptFriendRequest(requestId) {
+      try {
+        const response = await fetch(`/api/friends/requests/${requestId}/accept`, {
+          method: 'POST'
+        });
+        const data = await response.json();
+
+        if (data.success) {
+          alert('Chấp nhận kết bạn thành công!');
+          loadFriendRequests(); // Reload requests
+          loadFriends(); // Reload friends list
+          updateFriendRequestsBadge(); // Update badge
+        } else {
+          alert(data.message || 'Chấp nhận kết bạn thất bại');
+        }
+      } catch (error) {
+        console.error('Error accepting friend request:', error);
+        alert('Lỗi khi chấp nhận kết bạn. Vui lòng thử lại.');
+      }
+    }
+
+    // Reject friend request
+    async function rejectFriendRequest(requestId) {
+      try {
+        const response = await fetch(`/api/friends/requests/${requestId}/reject`, {
+          method: 'POST'
+        });
+        const data = await response.json();
+
+        if (data.success) {
+          alert('Từ chối kết bạn thành công!');
+          loadFriendRequests(); // Reload requests
+          updateFriendRequestsBadge(); // Update badge
+        } else {
+          alert(data.message || 'Từ chối kết bạn thất bại');
+        }
+      } catch (error) {
+        console.error('Error rejecting friend request:', error);
+        alert('Lỗi khi từ chối kết bạn. Vui lòng thử lại.');
+      }
+    }
+
+    // Update friend requests badge
+    async function updateFriendRequestsBadge() {
+      try {
+        const response = await fetch(`/api/friends/requests/received/${currentUser.id}`);
+        const data = await response.json();
+
+        const badge = document.getElementById('requestsBadge');
+        if (data.success && data.data.length > 0) {
+          badge.textContent = data.data.length;
+          badge.style.display = 'block';
+        } else {
+          badge.style.display = 'none';
+        }
+      } catch (error) {
+        console.error('Error updating badge:', error);
+      }
+    }
+
+    // Helper function to get time ago
+    function getTimeAgo(date) {
+      const now = new Date();
+      const diffInSeconds = Math.floor((now - date) / 1000);
+      
+      if (diffInSeconds < 60) return 'Vừa xong';
+      if (diffInSeconds < 3600) return Math.floor(diffInSeconds / 60) + ' phút trước';
+      if (diffInSeconds < 86400) return Math.floor(diffInSeconds / 3600) + ' giờ trước';
+      return Math.floor(diffInSeconds / 86400) + ' ngày trước';
+    }
+
+    // Search users on Enter key
+    document.addEventListener('DOMContentLoaded', function() {
+      const searchInput = document.getElementById('userSearchInput');
+      if (searchInput) {
+        searchInput.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            searchUsers();
+          }
+        });
+      }
+    });
+
+    function logout() {
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('currentUser');
+      window.location.href = '/login.html';
+    }
+  </script>
+</body>
+</html>
